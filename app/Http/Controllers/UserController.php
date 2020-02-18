@@ -24,13 +24,7 @@ class UserController extends Controller
 
         if ($data['status'] == 'ok') {
             // Validacion correcta
-            $pass = password_hash(
-                $userdata_array['password'],
-                PASSWORD_BCRYPT,
-                [
-                    'cost' => 4
-                ]
-            );
+            $pass = hash('sha256', $userdata_array['password']);
 
             // Crear el usuario
             $user = new User();
@@ -51,7 +45,29 @@ class UserController extends Controller
 
     public function login(Request $request)
     {
-        return "Aqui se va a logear usuario";
+        // Recibir data por post
+        $userdata = $request->input('json', null);
+        $logindata = json_decode($userdata, true);
+
+        // Validar datos
+        $response_data = $this->validateLogin($logindata);
+
+        return response()->json($response_data, $response_data['code']);
+    }
+
+    public function update(Request $request)
+    {
+        $token = $request->header('Authorization');
+        $token = preg_replace('/([\'"])/', '', $token);
+        $jwtAuth = new \JwtAuth();
+
+        $checkToken = $jwtAuth->checkToken($token);
+
+        if ($checkToken) {
+            echo "token valido ";
+        } else {
+            echo "token incorrecto";
+        }
     }
 
     // Funciones auixiliares
@@ -95,5 +111,46 @@ class UserController extends Controller
         }
 
         return $data;
+    }
+
+    private function validateLogin($logindata)
+    {
+        $jwtAuth = new \JwtAuth();
+        if (!empty($logindata)) {
+            $validator = \Validator::make($logindata, [
+                'email' => 'required|email',
+                'password' => 'required'
+            ]);
+
+            if ($validator->fails()) {
+                $response_data = array(
+                    'status' => 'error',
+                    'code' => 401,
+                    'message' => 'No se ha podido iniciar sesion.',
+                    'errors' => $validator->errors()
+                );
+            } else {
+                // Cifrar password
+                $pwd = hash('sha256', $logindata['password']);
+
+                // Devolver datos o token
+                $response_data = $jwtAuth->signUp($logindata['email'], $pwd);
+                if (!empty($logindata['getToken'])) {
+                    $response_data = $jwtAuth->signUp(
+                        $logindata['email'],
+                        $pwd,
+                        true
+                    );
+                }
+            }
+        } else {
+            $response_data = array(
+                'status' => 'error',
+                'code' => 400,
+                'message' => 'No se pudo procesar los datos enviados.'
+            );
+        }
+
+        return $response_data;
     }
 }
