@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Post extends Model
 {
+    protected $fillable = ['title', 'content', 'category_id'];
     protected $table = 'posts';
 
     //relacion de varios a 1

@@ -47,3 +47,9 @@ Route::get('/api/v1/user/detail/{id}', 'UserController@detail');
 
 // Rutas del controlador de categorias
 Route::resource('/api/v1/category', 'CategoryController');
+// Rutas del controlador de Posts
+Route::resource('/api/v1/post', 'PostController');
+Route::post('api/v1/post/upload', 'PostController@upload');
+Route::get('api/v1/post/image/{filename}', 'PostController@getImage');
+Route::get('api/v1/post/category/{id}', 'PostController@getPostsByCategory');
+Route::get('api/v1/post/user/{id}', 'PostController@getPostsByUser');
