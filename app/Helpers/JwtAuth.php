@@ -33,8 +33,10 @@ class JwtAuth
                 'email' => $user->email,
                 'name' => $user->name,
                 'lastname' => $user->lastname,
+                'description' => $user->description,
+                'image' => $user->image,
                 'iat' => time(),
-                'exp' => time() + 24 * 60 * 60
+                'exp' => time() + 5
             );
 
             $jwt_token = JWT::encode($token_options, $this->token_key, 'HS256');
