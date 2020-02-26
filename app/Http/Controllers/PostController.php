@@ -104,7 +104,7 @@ class PostController extends Controller
 
         $response_data = [
             'status' => 'ok',
-            'code' => 200,
+            'code' => 201,
             'message' => 'Se ha creado el post sin problemas.',
             'data' => $post
         ];
@@ -165,6 +165,7 @@ class PostController extends Controller
             $response_data = [
                 'status' => 'ok',
                 'code' => 200,
+                'message' => 'El Post se ha modificado correctamente',
                 'data' => [
                     'post' => $post,
                     'changes' => $params
